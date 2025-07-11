@@ -15,7 +15,8 @@ Then pip install the repo
 ```
 pip install -e .
 ```
-(Optional) Run the unit tests to ensure the implementation was succesful
+(Optional) Run the unit tests to ensure the implementation was succesful.
+This currently won't work because AIMNet2-rxn isn't currenltly available!
 ```
 cd test
 python -m unittest
