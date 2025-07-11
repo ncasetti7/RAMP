@@ -1,0 +1,70 @@
+---
+launcher_args:
+  with_slurm: True # Select whether to launch job as a slurm script
+  path_to_mechanism_search: /PATH/TO/RAMP # Path to mechanism search
+
+slurm_args:
+  template_slurm_script: src/RAMP/utils/template_slurm_script.sh # Path to slurm script template
+  num_cpus: 48 # Number of CPUs
+  time_hours: 90 # Max time (hours)
+  time_minutes: 0 # Max time (minutes)
+  mem: 128G # Memory allocated
+  multinode: True # Whether to use multiple nodes in a calculation (will launch extra jobs)
+  num_nodes: 7 # Number of *extra* nodes to use for parallel calculations (ignored if multinode is false)
+
+data:
+  input_structure: C/C=C/C=C\C=C/C=C/C # Input structure (MAKE CANONICAL)
+
+enumeration:
+  num_bonds_broken: 4 # Enumerate up to bnfn in intermediate enumeration
+  closed_shell: True # Exclude open shell and zwitterionic intermediates
+  smiles_output: enumerated_smiles.csv # Enumerated intermediates will get saved here (for checking intermediates)
+
+classification_model:
+  model: src/RAMP/model/local_min_classification_model/pretrained_models/pretrained_random_split.pt # Path to pretrained model (ignored if use_pretrained is false)
+  preds_output: class_preds.csv
+  smiles_output: classifier_filtered_smiles.csv # Molecules that survive the classification model filter will get saved here
+
+enthalpy_model:
+  model: src/RAMP/model/rxn_enthalpy_regression_model/pretrained_models/pretrained_random_split.pt # Path to pretrained model (ignored if use_pretrained is false)
+  preds_output: enthalpy_preds.csv
+  smiles_output: regression_filtered_smiles.csv # Molecules that survive the regression model filter will get saved here
+
+conformers:
+  enthalpy_conformers: 1 # Number of conformers to use for enthalpy pruning
+  barrier_conformers: 4 # Number of conformers to use for barrier pruning
+
+nnp:
+  enthalpy_model_file: /PATH/TO/MODEL # Path to NNP model (can be the same as barrier_model_file, must be a .jpt AIMNet model)
+  barrier_model_file: /PATH/TO/MODEL # Path to NNP model (must be a .jpt AIMNet model)
+  enthalpy_preds_output: nnp_enthalpy_preds.csv
+  enthalpy_smiles_output: nnp_regression_filtered_smiles.csv # Molecules that survive the NNP enthalpy filter will get saved here
+  barrier_preds_output: nnp_barrier_preds.csv
+  barrier_smiles_output: nnp_barrier_filtered_smiles.csv # Molecules that survive the NNP barrier filter will get saved here
+  ts_folder: ts_folder # Folder where TSs will be saved
+  reactant_file: reactant.xyz # File where reactant will be saved
+
+filters:
+  classification_probability_cutoff: 0.1 # Cutoff used by local minimum classifier
+  enthalpy_model_cutoff: 0.1 # Cutoff used by enthalpy ML model (in Ha)
+  enthalpy_nnp_cutoff: 0.03 # Cutoff used by NNP (in Ha)
+  use_barrier_cutoff: True # Whether to use a barrier cutoff
+  barrier_cutoff: 0.05 # Cutoff used by NNP (in Ha)
+  use_top_k_cutoff: True # Whether to use a top k cutoff
+  top_k: 100 # Number of top k to keep
+
+qm_calcs:
+  ts_folder: orca_ts_folder
+  log_output: "qm_calcs.log" # Saves various statistics about the run
+  smiles_output: qm_calcs_smiles.csv # Where to save all the final smiles
+  orca_path: /PATH/TO/ORCA # Path to orca executable (must be absolute path)
+  equilibrium_cache_file: equilibrium_cache.csv # File where equilibrium energies will be cached
+
+qm_slurm_args:
+  num_cpus: 12 # Number of CPUs
+  time_hours: 16 # Max time (hours)
+  time_minutes: 0 # Max time (minutes)
+  mem: 16G # Memory allocated
+
+results:
+  log_output: "search.log" # Saves various statistics about the run
