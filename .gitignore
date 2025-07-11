@@ -1,0 +1,19 @@
+# All __pycache__ directories
+**/__pycache__
+
+# All .egg-info folders
+**/*.egg-info
+
+# All results except visualize_network.ipynb
+results/*
+!results/visualize_network.ipynb
+
+# All run_scripts except run_from_config.py and run_qm_from_config.py
+run_scripts/*
+run_scripts/slurm_scripts/*
+!run_scripts/run_from_config.py
+!run_scripts/run_qm_from_config.py
+
+# All config files except 3_4_2024_khp
+config/*
+!config/example_config
